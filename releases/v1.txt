@@ -1,0 +1,243 @@
+********************************
+*****Hashtags für das WBB 2*****
+********************************
+
+by kill0rz - visit kill0rz.com
+(C) 2014
+Version 1.0, last modified 27.01.2014
+
+
+
+Beschreibung:
+#############
+
+Dieser Hack fügt Hashtags wie bei twitter ein.
+Wird in einem Beitrag ein Hashtag verwendet, in etwa #so, dann wird dieser automatisch durch WBB als solcher gekennzeichnet.
+Standardmäßig geschieht dies durch das Aussehen eines HTML-Links, kann aber beliebig verändert werden (Notitz in der Anleitung).
+Eine Inklusion für die XundY Megashoutbox V1.3 ist in dieser Anleitung vorhanden.
+
+Installationszeit:
+##################
+
+10 Minuten
+
+Copyright:
+##########
+
+Der Hack darf (auch modfiziert) uneingeschränkt weitergegeben werden.
+Diese originale Readme muss aber immer unverändert mitgeliefert werden.
+Für Modifikationen Dritter gibt es von mir keinen Support.
+Auch Übernehme ich für nichts eine Garantie; bei mir läuft der Hack ohne Probleme, getestet mit WBB2.3.6pl2 - sollte aber auch mit allen anderen WBB2-Versionen funktionieren.
+
+Support:
+########
+
+Gibt es im Thread auf your-wbb.de und unter http://blog.kill0rz.com/2014/01/27/hashtag-hack-fuer-das-woltlab-burning-board-2/ .
+
+Known Bugs:
+###########
+
+Mehrere Hashtags in einer Zeile funktionieren nicht. Wenn das Interesse besteht, setze ich mich noch an das Problem.
+
+Zukünftige Features:
+####################
+
+Eine Suche, die alle Posts in denen ein bestimmter Hashtag vorkommt auflistet; Suche hinter jedem Hashtag.
+
+
+
+
+Anleitung:
+##########
+
+Mach zuerst ein Backup.
+
+
+++++++++++++++++++++++
+1) BB-Code erstellen++
+++++++++++++++++++++++
+
+
+Der Hack nutzt zur Darstellung einen BB-Code, diesen legen wir zuerst im ACP an.
+
+ACP --> BB-Code erstellen
+
+###
+
+BBCode Tag:	
+
+hashtag
+
+---
+
+wird ersetzt durch: 
+
+<font color="blue" style="text-decoration: underline;">{param1}</font>
+
+--> Hier kann das Aussehen beliebig angepasst werden (auch nachträglich)
+
+---
+
+Beispiel für die Verwendung (für Hilfe):	
+
+[hashtag]#yolo[/hashtag]
+
+---
+
+Beschreibung (für Hilfe):	
+
+Fügt Hashtags wie bei twitter ein.
+
+---
+
+Anzahl Parameter:	
+
+1
+
+---
+
+max. Anzahl der Verschachtelung:	
+
+1
+
+---
+
+Ersetzung von dem Ersetzen evaluieren?
+
+ja
+
+--> der Rest bleibt leer, speichern
+
+###
+
+++++++++++++++++++++++
+2) Dateien editieren++
+++++++++++++++++++++++
+
+############################
+() ./acp/lib/functions.php##
+############################
+
+Suche
+-----
+
+?>
+
+Füge darüber ein
+----------------
+
+function parseHASHTAGS($text){
+		//Adds Hastag-Support for texts
+		//by kill0rz, last modified 27.01.2014
+		
+		//output is string
+		
+		$text = explode("\n",$text);
+		
+		for($i = 0; $i < count($text); $i++){
+
+			if(str_replace("#","",$text[$i]) != $text[$i]){
+				$startstr = strpos($text[$i],"#");
+				$endstr = strpos($text[$i]," ",$startstr);
+				if($endstr > 1){
+					$length = $endstr - $startstr;
+				}else{
+					$length = 100000;
+				}
+				$hashtag = substr($text[$i],$startstr,$length);
+
+				if(substr($text[$i],$startstr-1,1) == ' ' or $startstr == 0){
+					$text[$i] = str_replace($hashtag,"[hashtag]".trim($hashtag)."[/hashtag]",$text[$i]);
+				}
+				
+			}
+			
+		}
+		$text = implode("\n",$text);
+		return $text;
+}
+
+
+
+###################
+() ./editpost.php##
+###################
+
+Suche
+-----
+
+if ($parseurl == 1 && $allowbbcode == 1) $message = parseURL($message);
+
+Füge darunter ein
+-----------------
+
+//Hashtags by kill0rz
+$message = parseHASHTAGS($message);
+
+
+
+###################
+() ./addreply.php##
+###################
+
+Suche
+-----
+
+if ($parseurl == 1 && $allowbbcode == 1) $message = parseURL($message);
+
+Füge darunter ein
+-----------------
+
+//Hashtags by kill0rz
+$message = parseHASHTAGS($message);
+
+
+
+####################
+() ./newthread.php##
+####################
+
+Suche
+-----
+
+if ($_POST['parseurl'] == 1 && $allowbbcode == 1) $message = parseURL($message);
+
+Füge darunter ein
+-----------------
+
+//Hashtags by kill0rz
+$message = parseHASHTAGS($message);
+
+++++++++++++++++++++++++++++++++++++++++++++++
+3) Inklusion in die  XundY Megashoutbox V1.3++
+++++++++++++++++++++++++++++++++++++++++++++++
+
+Dieser Schritt ist nur notwendig, wenn du die XundY Megashoutbox V1.3 auch installiert hast :D
+Ursprünglich wurde der Hack nur für die Shoutbox konstruiert, denn hier findet er am ehesten Einsatz.
+
+##########################
+() ./xy_megashoutbox.php##
+##########################
+
+Suche
+-----
+
+$db->query("UPDATE bb".$n."_xy_shoutbox SET `comment`= '".addslashes($comment)."' WHERE `id`='".intval($_POST[shoutid])."' AND `name`='".mysql_real_escape_string($wbbuserdata['username'])."'");
+
+--> Solltest du bereits meine Fixes für XundY Megashoutbox V1.3 installiert haben, füge den Code unter den letzten Fix ein.
+
+Füge darüber ein
+----------------
+
+//Hashtags by kill0rz, 27.01.2014
+			$message = parseHASHTAGS($message);
+//
+
+
+##############################
+
+Das wars schon :)
+Wenn jemand Fehler findet, dann bitte bei mir melden!
+
+Viel Spaß,
+kill0rz
