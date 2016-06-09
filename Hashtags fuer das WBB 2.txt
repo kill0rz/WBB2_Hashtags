@@ -64,7 +64,7 @@ ACP --> BB-Code erstellen
 
 ###
 
-BBCode Tag:	
+BBCode Tag:
 
 hashtag
 
@@ -78,25 +78,25 @@ wird ersetzt durch:
 
 ---
 
-Beispiel für die Verwendung (für Hilfe):	
+Beispiel für die Verwendung (für Hilfe):
 
 [hashtag]#yolo[/hashtag]
 
 ---
 
-Beschreibung (für Hilfe):	
+Beschreibung (für Hilfe):
 
 Fügt Hashtags wie bei twitter ein.
 
 ---
 
-Anzahl Parameter:	
+Anzahl Parameter:
 
 1
 
 ---
 
-max. Anzahl der Verschachtelung:	
+max. Anzahl der Verschachtelung:
 
 1
 
@@ -126,35 +126,34 @@ Suche
 Füge darüber ein
 ----------------
 
-function parseHASHTAGS($text){
-		//Adds Hastag-Support for texts
-		//by kill0rz, last modified 27.01.2014
-		
-		//output is string
-		
-		$text = explode("\n",$text);
-		
-		for($i = 0; $i < count($text); $i++){
+function parseHASHTAGS($text) {
+	//Adds Hastag-Support for texts
+	//by kill0rz, last modified 27.01.2014
 
-			if(str_replace("#","",$text[$i]) != $text[$i]){
-				$startstr = strpos($text[$i],"#");
-				$endstr = strpos($text[$i]," ",$startstr);
-				if($endstr > 1){
-					$length = $endstr - $startstr;
-				}else{
-					$length = 100000;
-				}
-				$hashtag = substr($text[$i],$startstr,$length);
+	//output is string
 
-				if(substr($text[$i],$startstr-1,1) == ' ' or $startstr == 0){
-					$text[$i] = str_replace($hashtag,"[hashtag]".trim($hashtag)."[/hashtag]",$text[$i]);
-				}
-				
+	$text = explode("\n", $text);
+
+	for ($i = 0; $i < count($text); $i++) {
+
+		if (str_replace("#", "", $text[$i]) != $text[$i]) {
+			$startstr = strpos($text[$i], "#");
+			$endstr = strpos($text[$i], " ", $startstr);
+			if ($endstr > 1) {
+				$length = $endstr - $startstr;
+			} else {
+				$length = 100000;
 			}
-			
+			$hashtag = substr($text[$i], $startstr, $length);
+
+			if (substr($text[$i], $startstr - 1, 1) == ' ' or $startstr == 0) {
+				$text[$i] = str_replace($hashtag, "[hashtag]" . trim($hashtag) . "[/hashtag]", $text[$i]);
+			}
 		}
-		$text = implode("\n",$text);
-		return $text;
+
+	}
+	$text = implode("\n", $text);
+	return $text;
 }
 
 
